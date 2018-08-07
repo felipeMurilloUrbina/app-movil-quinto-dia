@@ -1,0 +1,7 @@
+{
+  "name": "avika-movil",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "ionic-angular"
+}
