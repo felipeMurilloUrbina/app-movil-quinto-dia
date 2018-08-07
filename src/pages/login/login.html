@@ -7,28 +7,26 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Bienvenido a Avika</ion-title>
+    <ion-title>Bienvenido a Quinto Dia</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <form >
-    <div style="width: 60%; margin: auto; vertical-align: middle;">
-      <div class="col-md-12">
-        <div class="form-group">
-          <label>Usuario:</label>
-          <input type="text" class="form-control" name="userName" placeholder="Usuario">
-        </div>
-      </div>
-      <div class="col-md-12">
-        <div class="form-group">
-          <label>Password:</label>
-          <input type="text" class="form-control" name="password" placeholder="contraseña">
-        </div>
-      </div>
-      <button ion-button block (click)="openMenu()">
-        Show Action Sheet
-      </button>
-    </div>
-  </form>
+  <ion-list >
+
+    <ion-item>
+      <ion-label floating>Usuario</ion-label>
+      <ion-input type="text" ></ion-input>
+    </ion-item>
+  
+    <ion-item>
+      <ion-label floating>Password</ion-label>
+      <ion-input type="password"></ion-input>
+    </ion-item>
+  
+  </ion-list>
+  <button ion-button icon-start (click)="entrar()">
+    <ion-icon name="home"></ion-icon>
+    Entrar
+  </button>
 </ion-content>
