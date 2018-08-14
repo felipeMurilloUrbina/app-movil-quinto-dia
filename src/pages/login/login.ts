@@ -1,5 +1,6 @@
+import { ContenedorTabsPage } from './../contenedor-tabs/contenedor-tabs';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
 import { AutentificacionService } from '../../servicios/autentificacion.service';
 import { Usuario } from '../../modelos/usuario.model';
 
@@ -19,17 +20,35 @@ import { Usuario } from '../../modelos/usuario.model';
 export class LoginPage {
 
   usuario : Usuario;
-  constructor(public navCtrl: NavController, public navParams: NavParams, private _service: AutentificacionService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private _service: AutentificacionService, public loadingController: LoadingController, public toaster: ToastController) {
     this.usuario = new Usuario();
-    this.usuario.rfc = 'xxxxxxx';
   }
 
   ionViewDidLoad() {
-
+    // if(localStorage.getItem('token')) {
+    //   this.navCtrl.setRoot(ContenedorTabsPage);
+    // }
   }
 
   entrar() {
-    console.log('aaaa');
-    console.log(this.usuario);
+    const loader = this.loadingController.create({content: "Entrando..."});
+    loader.present().then(() => {
+      this._service.login(this.usuario).subscribe(data => {
+      this.navCtrl.setRoot(ContenedorTabsPage);
+        loader.dismiss();
+      }, error => {
+        loader.dismiss();
+        this.enviarMensaje(error.error.error_description);
+        this.usuario = new Usuario();
+      });
+    });
+  }
+  
+  enviarMensaje(mensaje) {
+    const toast = this.toaster.create({
+      message: mensaje,
+      duration: 3000
+    });
+    toast.present();
   }
 }

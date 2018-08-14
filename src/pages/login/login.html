@@ -11,22 +11,47 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="background-login">
+    <form #loginForm="ngForm" (ngSubmit)="entrar()">
+      <ion-card class="div-login">
+        <ion-card-header>
+          Inicia Session
+        </ion-card-header>
+        <ion-card-content>
+          <ion-item>
+            <ion-label floating>Usuario</ion-label>
+            <ion-input type="text" #nombreUsuarioInput required [value]="usuario.username" (change)="usuario.username = nombreUsuarioInput.value"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label floating>Password</ion-label>
+            <ion-input type="password" required #contraInput [value]="usuario.password" (change)="usuario.password = contraInput.value"></ion-input>
+          </ion-item>
+          <button ion-button outline item-end icon-start>
+            <ion-icon name="checkmark"></ion-icon>
+            Entrar
+          </button>
+          <button type="submit" ion-button outline item-end icon-start>
+            <ion-icon name="log-out"></ion-icon>
+            Salir
+          </button>
+        </ion-card-content>
+      </ion-card>
+    </form>
+    <!-- <ion-card>
+      <img src="../assets/imgs/logo.jpg"/>
+      <ion-item>
+        <ion-label floating>Usuario</ion-label>
+        <ion-input type="text" ></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label floating>Password</ion-label>
+        <ion-input type="password"></ion-input>
+      </ion-item>
+    </ion-card>
+    <button ion-button icon-start (click)="entrar()">
+      <ion-icon name="home"></ion-icon>
+      Entrar
+    </button>
   <ion-list >
-
-    <ion-item>
-      <ion-label floating>Usuario</ion-label>
-      <ion-input type="text" ></ion-input>
-    </ion-item>
-  
-    <ion-item>
-      <ion-label floating>Password</ion-label>
-      <ion-input type="password"></ion-input>
-    </ion-item>
-  
-  </ion-list>
-  <button ion-button icon-start (click)="entrar()">
-    <ion-icon name="home"></ion-icon>
-    Entrar
-  </button>
+  </ion-list> -->
 </ion-content>

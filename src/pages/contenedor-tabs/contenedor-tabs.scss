@@ -1,0 +1,14 @@
+page-contenedor-tabs {
+    ion-fab {
+        position: relative;
+    }
+     
+    ion-fab[bottom][edge] {
+      top: 80vh;
+      left: 47vh;
+    }
+     
+    .fab {
+      margin-left: 10vw;
+    }
+}

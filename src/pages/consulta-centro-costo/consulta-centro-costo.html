@@ -1,0 +1,39 @@
+<!--
+  Generated template for the ConsultaArticuloPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+    <ion-navbar>
+      <ion-title>consulta de centro de costo</ion-title>
+      <ion-buttons end>
+        <button ion-button (click)="cerrar()">
+          <ion-icon [name]="'close'" ></ion-icon>
+        </button>
+      </ion-buttons>
+    </ion-navbar>
+  
+  </ion-header>
+  
+  
+  <ion-content padding>
+      <ion-card>
+        <ion-card-content>
+          <ion-searchbar (ionInput)="buscar($event)" [showCancelButton]="true" animated=true placeholder="Buscar"></ion-searchbar>
+        </ion-card-content>
+      </ion-card>
+      <ion-card>
+        <ion-card-content>
+          <ion-list>
+            <ion-item (click)="seleccionar(articulo)" *ngFor="let articulo of filtroArts">
+              <h2>{{articulo.codigo}}</h2>
+              <p>{{articulo.descripcion}}</p>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+      
+  </ion-content>
+  
