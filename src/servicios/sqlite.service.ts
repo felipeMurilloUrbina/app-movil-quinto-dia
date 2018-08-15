@@ -1,7 +1,7 @@
+import { SalidaAlmacen } from './../modelos/salida-almacen.model';
 import { CentroCosto } from './../modelos/centro-costo.model';
 import { Articulo } from './../modelos/articulo.model';
 import { Injectable } from '@angular/core';
-import { Platform } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
@@ -13,21 +13,20 @@ export class SQLiteService {
   //initially set dbReady status to false
   private dbReady = new BehaviorSubject<boolean>(false);
 
-  constructor(private platform:Platform, private sqlite:SQLite) {
-    this.platform.ready().then(()=>{
-      this.sqlite.create({
-        name: 'invent.db',
-        location: 'default'
-      })
-      .then((db:SQLiteObject)=>{
-        this.database = db;
-        
-        this.createTables().then(()=>{     
-          //we loaded or created tables, so, set dbReady to true
-          this.dbReady.next(true);
-        });
-      })
+  constructor(private sqlite:SQLite) {
+  }
 
+  public creartablas(){
+    this.sqlite.create({
+      name: 'invent.db',
+      location: 'default'
+    })
+    .then((db:SQLiteObject)=>{
+      this.database = db;
+      this.createTables().then(()=>{     
+        //we loaded or created tables, so, set dbReady to true
+        this.dbReady.next(true);
+      });
     });
   }
 
@@ -53,13 +52,20 @@ export class SQLiteService {
       descripcion TEXT,
       codigo TEXT
       );`);
+      // consultas.push('DROP TABLE salidaAlmacen;');
     consultas.push(`CREATE TABLE IF NOT EXISTS salidaAlmacen (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      folio INTEGER,
+      codigoArticulo TEXT,
       descripcion TEXT,
+      codigoBodega TEXT,
+      codigoCentroCosto1 TEXT,
+      codigoCentroCosto2 TEXT,
+      usuario TEXT,
       posicion TEXT,
       fecha TEXTO,
-      codigo TEXT
-      codigo REAL
+      cantidad REAL,
+      enviado INTEGER
       );`);
       return this.database.sqlBatch(consultas).then(()=> {
         console.log('aaaaaa');
@@ -88,7 +94,7 @@ export class SQLiteService {
   getArticulos(consulta: string, cantidad: number){
     return this.isReady()
     .then(()=>{
-      return this.database.executeSql('SELECT * from articulos where descripcion like \'%' + consulta + '%\' limit ' + cantidad, [])
+      return this.database.executeSql('SELECT * FROM articulos WHERE descripcion LIKE \'%' + consulta + '%\' LIMIT ' + cantidad, [])
       .then((data)=>{
         let articulos = [];
         for(let i=0; i<data.rows.length; i++){
@@ -123,7 +129,7 @@ export class SQLiteService {
   getCentroCosto(consulta: string, cantidad: number){
     return this.isReady()
     .then(()=>{
-      return this.database.executeSql('SELECT * from centroCostos where descripcion like \'%' + consulta + '%\' limit ' + cantidad, [])
+      return this.database.executeSql('SELECT * FROM centroCostos WHERE descripcion LIKE \'%' + consulta + '%\' LIMIT ' + cantidad, [])
       .then((data)=>{
         let centroCostos = [];
         for(let i=0; i<data.rows.length; i++) {
@@ -131,7 +137,7 @@ export class SQLiteService {
         }
         return Promise.resolve( centroCostos );
       }).catch((error)=>{console.log("aaaa", error)});
-    })
+    });
   }
 
   agregarCentroCosto(centroCostos: CentroCosto[]) {
@@ -155,19 +161,37 @@ export class SQLiteService {
     })
   }
 
-  
-
-
-  getList(id: number) {
+  getSalidas(consulta: string, cantidad: number) {
     return this.isReady()
     .then(()=>{
-      return this.database.executeSql(`SELECT * FROM list WHERE id = ${id}`, [])
+      return this.database.executeSql('SELECT * FROM salidaAlmacen WHERE descripcion LIKE \'%' + consulta + '%\' LIMIT ' + cantidad, [])
       .then((data)=>{
-        if(data.rows.length){
-          return data.rows.item(0);
+        let salidas = [];
+        for(let i=0; i<data.rows.length; i++){
+          salidas.push(data.rows.item(i));
         }
-        return null;
-      })
+        return Promise.resolve( salidas );
+      }).catch((error)=>{console.log("aaaa", error)});
+    })
+  }
+
+  getFolioSalida(codigoBodega: string) {
+    return this.isReady().then(()=> {
+      return this.database.executeSql('SELECT MAX(folio) as folio FROM salidaAlmacen WHERE codigoBodega= \''+codigoBodega+'\'', [])
+      .then((data)=>{
+        return Promise.resolve( data.rows.item(0) );
+      }).catch((error)=>{console.log("aaaa", error)});
     });
+  }
+
+  agregarSalida(salida: SalidaAlmacen) {
+    return this.isReady()
+    .then(()=>{
+        this.database.executeSql(`INSERT INTO salidaAlmacen 
+          (folio, codigoArticulo, descripcion, codigoBodega, codigoCentroCosto1, codigoCentroCosto2, 
+           usuario, posicion, fecha, cantidad, enviado ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, 
+          [salida.folio, salida.codigoArticulo, salida.codigoArticulo.trim(), salida.descripcion.trim(), salida.codigoBodega, salida.codigoCentroCosto1, salida.codigoCentroCosto2, salida.usuario, salida.posicion, salida.fecha, salida.cantidad, salida.enviado?1:0])
+          .catch((err)=>console.log("Error al Insertar Salida", err));
+    }); 
   }
 }

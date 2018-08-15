@@ -7,64 +7,56 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>Bodega<{{bodega?.descripcion.trim()}}></ion-title>
+    <ion-title>Salida No.<{{salida.folio}}></ion-title>
   </ion-navbar>
 
 </ion-header>
 
 <ion-content padding>
-    <ion-card>
-      <ion-card-content>
-        <ion-item *ngIf="articuloSeleccionado" >
-          <ion-input type="text" name="codigobarras" [(ngModel)]= "articuloSeleccionado.codigo"  placeholder="Codigo Producto ..."></ion-input>
-          <button ion-button large clear (click)="buscarProducto()" item-end>
-            <ion-icon name="search"></ion-icon>
-          </button>
-        </ion-item>
-        <ion-card *ngIf="articuloSeleccionado?.codigo !== ''">
-            <ion-card-content class="div-descripcion">
-              <p> Articulo:<br/>
-                {{articuloSeleccionado.descripcion}}
-                Categoria: 
-                {{articuloSeleccionado.categoria}}
-              </p>
-            </ion-card-content>
-        </ion-card>      
-        <ion-item>
-          <ion-input type="number" name="cantidad" [(ngModel)]= "cantidad" placeholder="Cantidad ..."></ion-input>
-        </ion-item>
-          <ion-grid>
-            <ion-row>
-              <ion-col col-12>
-                <ion-item>
-                  <ion-input type="text" name="codigoCentroCosto1" [(ngModel)]= "centroSeleccionado1.codigo" placeholder="Costeo 1 ..."></ion-input>
-                  <button ion-button large clear (click)="buscarCentroCosteo(1)" item-end>
-                    <ion-icon name="search"></ion-icon>
-                  </button>
-                </ion-item>
-                <p>{{centroSeleccionado1.descripcion}}</p>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <ion-col col-12>
-                <ion-item>
-                  <ion-input type="text" name="codigoCentroCosto2" [(ngModel)]= "centroSeleccionado2.codigo" placeholder="Costeo 2 ..."></ion-input>
-                    <button ion-button large clear (click)="buscarCentroCosteo(2)" item-end>
-                      <ion-icon name="search"></ion-icon>
-                    </button>
-                  </ion-item>
-                  <p>{{centroSeleccionado2.descripcion}}</p>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
-          <button ion-button outline item-end icon-start (click)="agregarLista()">
-            <ion-icon name="checkmark"></ion-icon>
-            Agregar
-          </button>
-          <button type="submit" ion-button outline item-end icon-start (click)="limpiar()">
-            <ion-icon name="trash"></ion-icon>
-            Cancelar
-          </button>
-      </ion-card-content>
-    </ion-card>
+  <ion-card>
+    <ion-card-content>
+      Seleccione Un Articulo
+      <ion-item *ngIf="articuloSeleccionado" >
+        <ion-input type="text" name="codigobarras" [(ngModel)]= "salida.codigoArticulo" readonly="true" placeholder="Busca Codigo Producto ..."></ion-input>
+        <button ion-button large clear (click)="buscarProducto()" item-end>
+          <ion-icon name="search"></ion-icon>
+        </button>
+      </ion-item>
+      <ion-card class="div-descripcion">
+        <ion-card-content *ngIf="articuloSeleccionado">
+          <p> Articulo:
+          {{articuloSeleccionado.descripcion}}
+          Categoria: 
+          {{articuloSeleccionado.categoria}}
+          </p>
+        </ion-card-content>
+      </ion-card>
+      <ion-item>
+        <ion-input type="number" name="cantidad" [(ngModel)]= "salida.cantidad" placeholder="Cantidad ..."></ion-input>
+      </ion-item>
+      Seleccione los centros de costos
+      <ion-item>
+        <ion-input type="text" name="codigoCentroCosto1" [(ngModel)]= "salida.codigoCentroCosto1" readonly="true" placeholder="Costeo 1 ..."></ion-input>
+        <button ion-button large clear (click)="buscarCentroCosteo(1)" item-end>
+          <ion-icon name="search"></ion-icon>
+        </button>
+      </ion-item>
+      <ion-item>
+        <ion-input type="text" name="codigoCentroCosto2" [(ngModel)]= "salida.codigoCentroCosto2" readonly="true" placeholder="Costeo 2 ..."></ion-input>
+        <button ion-button large clear (click)="buscarCentroCosteo(2)" item-end>
+          <ion-icon name="search"></ion-icon>
+        </button>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+  <button ion-button outline item-end icon-start (click)="agregarLista()">
+    <ion-icon name="checkmark"></ion-icon>
+    
+  </button>
+  <button type="submit" ion-button outline item-end icon-start (click)="limpiar()">
+    <ion-icon name="trash"></ion-icon>
+  </button>
+  <button type="submit" ion-button outline item-end icon-start (click)="verDetalles()">
+    <ion-icon name="cart"></ion-icon>
+  </button>
 </ion-content>

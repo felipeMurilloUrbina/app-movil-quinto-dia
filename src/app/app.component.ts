@@ -1,3 +1,4 @@
+import { SQLiteService } from './../servicios/sqlite.service';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -16,7 +17,7 @@ export class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, public sqlService: SQLiteService) {
     this.initializeApp();
 
     // used for an example of ngFor and navigation
@@ -30,6 +31,7 @@ export class MyApp {
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+      this.sqlService.creartablas();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });

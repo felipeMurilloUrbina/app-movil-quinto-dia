@@ -1,3 +1,4 @@
+import { SalidaAlmacenService } from './../../servicios/salida-almacen.service';
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { AjusteAlmacenPage } from './ajuste-almacen';
@@ -9,5 +10,6 @@ import { AjusteAlmacenPage } from './ajuste-almacen';
   imports: [
     IonicPageModule.forChild(AjusteAlmacenPage),
   ],
+  providers: [SalidaAlmacenService]
 })
 export class AjusteAlmacenPageModule {}

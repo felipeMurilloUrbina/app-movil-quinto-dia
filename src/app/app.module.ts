@@ -20,6 +20,7 @@ import { SQLite } from '@ionic-native/sqlite';
 import { SQLiteService } from '../servicios/sqlite.service';
 import { ChartsModule } from 'ng2-charts';
 import { SignupPageModule } from '../pages/signup/signup.module';
+import { DetalleSalidaPageModule } from '../pages/detalle-salida/detalle-salida.module';
 @NgModule({
   declarations: [
     MyApp,
@@ -34,6 +35,7 @@ import { SignupPageModule } from '../pages/signup/signup.module';
     EstanquePageModule,
     LoginPageModule,
     SignupPageModule,
+    DetalleSalidaPageModule,
     ConsultaArticuloPageModule,
     ConsultaCentroCostoPageModule,
     IonicModule.forRoot(MyApp),
