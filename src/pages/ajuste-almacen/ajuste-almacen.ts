@@ -1,3 +1,5 @@
+import { Bodega } from './../../modelos/bodega.model';
+import { HomePage } from './../home/home';
 import { SalidaAlmacen } from './../../modelos/salida-almacen.model';
 import { CentroCosto } from './../../modelos/centro-costo.model';
 import { Articulo } from '../../modelos/articulo.model';
@@ -25,23 +27,30 @@ export class AjusteAlmacenPage {
   centroBusqueda = 1;
   cantidad = 0;
   listaSalidas: SalidaAlmacen[] = [];
+  bodega: Bodega;
   constructor(public navCtrl: NavController, public navParams: NavParams,  public modalCtrl: ModalController, public toaster: ToastController) {
     this.articuloSeleccionado = new Articulo();
+    this.bodega = JSON.parse(localStorage.getItem('bodega'));
+  }
+
+  ionViewDidEnter() {
+    this.bodega = JSON.parse(localStorage.getItem('bodega'));
   }
 
   ionViewDidLoad() {
+    if(!this.bodega) {
+      this.enviarMensaje('Necesita seleccionar una bodega.');
+      this.navCtrl.push(HomePage);
+    }else {
+
+    }
   }
 
   buscarProducto() {
     const modal = this.modalCtrl.create(ConsultaArticuloPage);
     modal.onDidDismiss(dato => {
       if (dato) {
-        if ((dato.Codigo !== this.centroSeleccionado1.codigo) && (dato.codigo !== this.centroSeleccionado2.codigo)) {
           this.articuloSeleccionado = dato;
-          console.log(dato);
-        } else {
-          this.enviarMensaje('No puede ser igual centro de costo 1 y 2.');
-        }
       }
     });
     modal.present();
@@ -52,10 +61,13 @@ export class AjusteAlmacenPage {
     const modal = this.modalCtrl.create(ConsultaCentroCostoPage);
     modal.onDidDismiss(dato => {
       if (dato) {
-        if(this.centroBusqueda === 1) {
-          this.centroSeleccionado1 = <CentroCosto>dato;
-        } else {
-          this.centroSeleccionado2 = <CentroCosto>dato;
+        if ((dato.Codigo !== this.centroSeleccionado1.codigo) && (dato.codigo !== this.centroSeleccionado2.codigo)) {
+          if(this.centroBusqueda === 1) {
+          
+            this.centroSeleccionado1 = <CentroCosto>dato;
+          } else {
+            this.centroSeleccionado2 = <CentroCosto>dato;
+          }
         }
       }
     });
@@ -63,7 +75,7 @@ export class AjusteAlmacenPage {
   }
 
   agregarLista() {
-    if (this.articuloSeleccionado.codigoBarras === '') {
+    if (this.articuloSeleccionado.codigo === '') {
       this.enviarMensaje('No puede estar vacio el articulo.');
       return false;
     }
@@ -81,12 +93,22 @@ export class AjusteAlmacenPage {
     }
 
     this.listaSalidas.push({
-      CodigoBarras : this.articuloSeleccionado.codigoBarras,
-      Bodega: '11111',
+      codigo : this.articuloSeleccionado.codigo,
+      descripcion: this.articuloSeleccionado.descripcion.trim(),
+      bodega: this.bodega.codigo.trim(),
       cantidad: this.cantidad
     });
+    this.enviarMensaje('Salida Agregada Correctamente.');
+    this.limpiar();
   }
 
+
+  limpiar() {
+    this.articuloSeleccionado = new Articulo();
+    this.centroSeleccionado1 = new CentroCosto();
+    this.centroSeleccionado2 = new CentroCosto();
+    this.cantidad = 0;
+  }
   enviarMensaje(mensaje) {
     const toast = this.toaster.create({
       message: mensaje,

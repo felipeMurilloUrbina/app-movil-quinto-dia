@@ -27,13 +27,12 @@
       <ion-card-content>
         <ion-list>
           <ion-item (click)="seleccionar(articulo)" *ngFor="let articulo of filtroArts">
-            <h2>{{articulo.codigoBarras}}</h2>
+            <h2>Codigo: {{articulo.codigo}}</h2>
             <p>{{articulo.descripcion}}</p>
-            <p>{{articulo.categoria}}</p>
-            <p>{{articulo.tipoMaterial}}</p>
+            <p>Unidad: {{articulo.unidad}}</p>
+            <p>Existencia: {{articulo.existencia}}</p>
           </ion-item>
         </ion-list>
       </ion-card-content>
     </ion-card>
-    
 </ion-content>

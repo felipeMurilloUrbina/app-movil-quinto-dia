@@ -1,5 +1,6 @@
 export class SalidaAlmacen {
-    public CodigoBarras = '';
-    public Bodega = '';
+    public codigo = '';
+    public descripcion = '';
+    public bodega = '';
     public cantidad = 0;
 }

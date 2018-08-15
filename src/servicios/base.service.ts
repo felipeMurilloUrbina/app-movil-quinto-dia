@@ -14,7 +14,8 @@ import { Injectable } from '@angular/core';
         headers: new HttpHeaders({
           'Content-Type':  'application/json',
           'Cache-Control': 'no-cache',
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          'bodega': '100' // localStorage.getItem('bodega')
         })
       };
     }
@@ -32,7 +33,7 @@ import { Injectable } from '@angular/core';
       return this.http.get <T> (this.actionUrl + '/' + id);
     }
   
-    public save<T>(itemName, endPoint) {
+    public save(itemName, endPoint) {
       if(itemName.id) {
         return this.update(itemName, endPoint);
       } else {
@@ -40,7 +41,7 @@ import { Injectable } from '@angular/core';
       }
     }
   
-    add <T> (itemName: T, endPoint) {
+    add<T> (itemName: T, endPoint) {
       return this.http.post <T> (this.actionUrl, itemName, this.httpOptions);
     }
   

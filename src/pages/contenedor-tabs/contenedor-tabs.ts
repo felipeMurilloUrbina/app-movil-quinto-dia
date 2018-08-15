@@ -1,10 +1,12 @@
+import { CentroCostoService } from './../../servicios/centro-costo.service';
+import { ArticuloService } from './../../servicios/articulo.service';
 import { LoginPage } from './../login/login';
 import { AutentificacionService } from './../../servicios/autentificacion.service';
 import { EstanquePage } from './../estanque/estanque';
 import { AjusteAlmacenPage } from './../ajuste-almacen/ajuste-almacen';
 import { HomePage } from './../home/home';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
 
 /**
  * Generated class for the ContenedorTabsPage page.
@@ -22,7 +24,7 @@ export class ContenedorTabsPage {
   inicio = HomePage;
   ajusteAlmacen = AjusteAlmacenPage;
   estanque = EstanquePage;
-  constructor(public navCtrl: NavController, public navParams: NavParams, private servicio: AutentificacionService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private servicio: AutentificacionService, public servicioArticulo: ArticuloService,  public servicioCentroCosto: CentroCostoService, private loaderCtrl: LoadingController) {
   }
 
   ionViewDidLoad() {
@@ -32,6 +34,19 @@ export class ContenedorTabsPage {
     console.log('aaaaa');
     this.servicio.logout();
     this.navCtrl.setRoot(LoginPage);
+  }
+  
+  sincronizarInfo() {
+    const loader= this.loaderCtrl.create({
+      content: 'Sincronizando Informacion...'
+    });
+    loader.present().then(() => {
+      this.servicioArticulo.sincronizarInfo().add((dato)=>{
+        this.servicioCentroCosto.sincronizarInfo().add((dato)=>{
+          loader.dismiss();
+        });
+      });
+    });
   }
 
 }

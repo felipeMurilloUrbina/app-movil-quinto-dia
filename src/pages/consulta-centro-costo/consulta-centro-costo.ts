@@ -33,34 +33,12 @@ export class ConsultaCentroCostoPage {
     });
   
     loader.present().then(() => {
-      this.servicio.getAll(this.pagina,500).subscribe(data => {
-        this.totalArts =this.totalArts.concat(<CentroCosto[]>data['items']);
-        this.totalRegistros = <number>data['totalItems'];
-        if(this.totalRegistros > this.totalArts.length) {
-          this.getInfoBackground();
-          this.pagina++;
-        }
+      this.servicio.getLocal('', 10).then(dato => {
+        this.totalArts= <CentroCosto[]>dato;
+        loader.dismiss();
         this.resetearBusqueda();
-      }, error =>{
-        loader.dismiss();
-      }, ()=> {
-        loader.dismiss();
       });
     });
-  }
-
-  getInfoBackground() {
-    this.servicio.getAll(this.pagina,500).subscribe(data => {
-      this.totalArts =this.totalArts.concat(<CentroCosto[]>data['items']);
-      this.totalRegistros = <number>data['totalItems'];
-      if(this.totalRegistros > this.totalArts.length) {
-        this.getInfoBackground();
-        this.pagina++;
-      }
-      this.resetearBusqueda();
-    }, error =>{
-    }, ()=> {
-    });  
   }
 
   seleccionar(articulo) {
@@ -78,15 +56,9 @@ export class ConsultaCentroCostoPage {
     this.resetearBusqueda();
     const val = ev.target.value;
     if (val && val.trim() != '') {
-      this.filtroArts = this.totalArts.filter((item) => {
-        return (item.descripcion.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      this.servicio.getLocal(val, 10).then(dato => {
+        this.filtroArts = <CentroCosto[]>dato;
       });
-      if (this.filtroArts.length == 0) {
-        this.filtroArts = this.totalArts.filter((item) => {
-          return (item.codigo.toLowerCase().indexOf(val.toLowerCase()) > -1);
-        });
-      }
     }
   }
-
 }

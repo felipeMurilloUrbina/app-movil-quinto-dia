@@ -24,9 +24,6 @@ export class ConsultaArticuloPage {
     this.totalArts = [];
   }
 
-  // ionViewDidLoad() {
-  // }
-
   cerrar() {
     this.viewController.dismiss();
   }
@@ -35,36 +32,13 @@ export class ConsultaArticuloPage {
     let loader = this.loadingCtrl.create({
       content: 'Obteniendo Articulos...',
     });
-  
     loader.present().then(() => {
-      this.servicio.getAll(this.pagina,500).subscribe(data => {
-        this.totalArts =this.totalArts.concat(<Articulo[]>data['items']);
-        this.totalRegistros = <number>data['totalItems'];
-        if(this.totalRegistros > this.totalArts.length) {
-          this.getInfoBackground();
-          this.pagina++;
-        }
+      this.servicio.getLocal('', 10).then(dato => {
+        this.totalArts = <Articulo[]>dato;
+        loader.dismiss();
         this.resetearBusqueda();
-      }, error =>{
-        loader.dismiss();
-      }, ()=> {
-        loader.dismiss();
       });
     });
-  }
-
-  getInfoBackground() {
-    this.servicio.getAll(this.pagina,500).subscribe(data => {
-      this.totalArts =this.totalArts.concat(<Articulo[]>data['items']);
-      this.totalRegistros = <number>data['totalItems'];
-      if(this.totalRegistros > this.totalArts.length) {
-        this.getInfoBackground();
-        this.pagina++;
-      }
-      this.resetearBusqueda();
-    }, error =>{
-    }, ()=> {
-    });  
   }
 
   seleccionar(articulo) {
@@ -82,14 +56,10 @@ export class ConsultaArticuloPage {
     this.resetearBusqueda();
     const val = ev.target.value;
     if (val && val.trim() != '') {
-      this.filtroArts = this.totalArts.filter((item) => {
-        return (item.descripcion.toLowerCase().indexOf(val.toLowerCase()) > -1);
+      this.servicio.getLocal(val, 10).then(dato => {
+        this.filtroArts = <Articulo[]>dato;
       });
-      if (this.filtroArts.length == 0) {
-        this.filtroArts = this.totalArts.filter((item) => {
-          return (item.codigoBarras.toLowerCase().indexOf(val.toLowerCase()) > -1);
-        });
-      }
     }
+   
   }
 }

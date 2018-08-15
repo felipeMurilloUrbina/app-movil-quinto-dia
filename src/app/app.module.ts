@@ -1,3 +1,4 @@
+import { LoginPageModule } from './../pages/login/login.module';
 import { BodegaService } from './../servicios/bodega.service';
 import { ConsultaArticuloPageModule } from './../pages/consulta-articulo/consulta-articulo.module';
 import { AjusteAlmacenPageModule } from './../pages/ajuste-almacen/ajuste-almacen.module';
@@ -7,33 +8,32 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
-
+import { Geolocation } from '@ionic-native/geolocation';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { LoginPage } from '../pages/login/login';
-import { SignupPage } from '../pages/signup/signup';
 import { AutentificacionService } from '../servicios/autentificacion.service';
 import { HttpClientModule } from '@angular/common/http';
 import { ContenedorTabsPageModule } from '../pages/contenedor-tabs/contenedor-tabs.module';
 import { EstanquePageModule } from '../pages/estanque/estanque.module';
 import { ConsultaCentroCostoPageModule } from '../pages/consulta-centro-costo/consulta-centro-costo.module';
 import { SQLite } from '@ionic-native/sqlite';
-
+import { SQLiteService } from '../servicios/sqlite.service';
+import { ChartsModule } from 'ng2-charts';
+import { SignupPageModule } from '../pages/signup/signup.module';
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
-    ListPage,
-    LoginPage,
-    SignupPage
   ],
   imports: [
     BrowserModule,
+    ChartsModule,
     HttpClientModule,
     ContenedorTabsPageModule,
     AjusteAlmacenPageModule,
     EstanquePageModule,
+    LoginPageModule,
+    SignupPageModule,
     ConsultaArticuloPageModule,
     ConsultaCentroCostoPageModule,
     IonicModule.forRoot(MyApp),
@@ -42,16 +42,15 @@ import { SQLite } from '@ionic-native/sqlite';
   entryComponents: [
     MyApp,
     HomePage,
-    ListPage,
-    LoginPage,
-    SignupPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     BodegaService,
+    Geolocation,
     AutentificacionService,
     SQLite,
+    SQLiteService,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

@@ -1,3 +1,5 @@
+import { CentroCosto } from './../modelos/centro-costo.model';
+import { Articulo } from './../modelos/articulo.model';
 import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
@@ -30,26 +32,41 @@ export class SQLiteService {
   }
 
   private createTables(){
-    return this.database.executeSql(
-      `CREATE TABLE IF NOT EXISTS list (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT
-      );`
-    ,[])
-    .then(()=>{
-      return this.database.executeSql(
-      `CREATE TABLE IF NOT EXISTS todo (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        description TEXT,
-        isImportant INTEGER,
-        isDone INTEGER,
-        listId INTEGER,
-        FOREIGN KEY(listId) REFERENCES list(id)
-        );`,[])
-    }).catch((err)=>console.log("error detected creating tables", err));
-
+    let consultas= [];
+    consultas.push(`CREATE TABLE IF NOT EXISTS articulos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      codigo TEXT,
+      descripcion TEXT,
+      unidad TEXT,
+      tipoMaterial TEXT,
+      categoria TEXT,
+      existencia REAL,
+      costoPromedio REAL
+    );`);
+    consultas.push(`CREATE TABLE IF NOT EXISTS centroCostos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      codigo TEXT,
+      descripcion TEXT
+      );`);
+    consultas.push(`CREATE TABLE IF NOT EXISTS bodegas (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      descripcion TEXT,
+      codigo TEXT
+      );`);
+    consultas.push(`CREATE TABLE IF NOT EXISTS salidaAlmacen (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      descripcion TEXT,
+      posicion TEXT,
+      fecha TEXTO,
+      codigo TEXT
+      codigo REAL
+      );`);
+      return this.database.sqlBatch(consultas).then(()=> {
+        console.log('aaaaaa');
+      }).catch((error)=>{
+        console.log(error);
+      });
   }
-
 
   private isReady(){
     return new Promise((resolve, reject) =>{
@@ -68,33 +85,80 @@ export class SQLiteService {
     })
   }
 
-
-  get(consulta: string){
+  getArticulos(consulta: string, cantidad: number){
     return this.isReady()
     .then(()=>{
-      return this.database.executeSql('SELECT * from' + consulta, [])
+      return this.database.executeSql('SELECT * from articulos where descripcion like \'%' + consulta + '%\' limit ' + cantidad, [])
       .then((data)=>{
-        let lists = [];
+        let articulos = [];
         for(let i=0; i<data.rows.length; i++){
-          lists.push(data.rows.item(i));
+          articulos.push(data.rows.item(i));
         }
-        return lists;
-      })
+        return Promise.resolve( articulos );
+      }).catch((error)=>{console.log("aaaa", error)});
     })
   }
 
-  addList(name:string){
+  agregarArticulo(articulos: Articulo[]) {
     return this.isReady()
     .then(()=>{
-      return this.database.executeSql(`INSERT INTO list(name) VALUES ('${name}');`, []).then((result)=>{
-        if(result.insertId){
-          return this.getList(result.insertId);
-        }
-      })
-    });    
+      let articulo: Articulo;
+      for(let i = 0; i < articulos.length; i++) {
+        articulo = articulos[i];
+        this.database.executeSql(`INSERT INTO articulos 
+          (codigo, descripcion, unidad, tipoMaterial, categoria, existencia, costoPromedio) VALUES (?, ?, ?, ?, ?, ?, ?);`, 
+          [articulo.codigo, articulo.descripcion.trim(), articulo.unidad.trim(), articulo.tipoMaterial.trim(), articulo.categoria.trim(), articulo.existencia, articulo.costoPromedio])
+          .catch((err)=>console.log("error detected creating tables", err));
+      }
+    });      
   }
 
-  getList(id:number){
+  borrarArticulos(){
+    return this.isReady()
+    .then(()=>{
+      return this.database.executeSql(`DELETE FROM articulos`, [])
+    })
+  }
+  
+  getCentroCosto(consulta: string, cantidad: number){
+    return this.isReady()
+    .then(()=>{
+      return this.database.executeSql('SELECT * from centroCostos where descripcion like \'%' + consulta + '%\' limit ' + cantidad, [])
+      .then((data)=>{
+        let centroCostos = [];
+        for(let i=0; i<data.rows.length; i++) {
+          centroCostos.push(data.rows.item(i));
+        }
+        return Promise.resolve( centroCostos );
+      }).catch((error)=>{console.log("aaaa", error)});
+    })
+  }
+
+  agregarCentroCosto(centroCostos: CentroCosto[]) {
+    return this.isReady()
+    .then(()=>{
+      let centroCosto: CentroCosto;
+      for(let i = 0; i < centroCostos.length; i++) {
+        centroCosto = centroCostos[i];
+        this.database.executeSql(`INSERT INTO centroCostos 
+          (codigo, descripcion) VALUES (?, ?);`, 
+          [centroCosto.codigo, centroCosto.descripcion.trim()])
+          .catch((err)=>console.log("error detected creating tables", err));
+      }
+    });      
+  }
+    
+  borrarCentroCosto(){
+    return this.isReady()
+    .then(()=>{
+      return this.database.executeSql(`DELETE FROM centroCostos`, [])
+    })
+  }
+
+  
+
+
+  getList(id: number) {
     return this.isReady()
     .then(()=>{
       return this.database.executeSql(`SELECT * FROM list WHERE id = ${id}`, [])
@@ -104,62 +168,6 @@ export class SQLiteService {
         }
         return null;
       })
-    })    
-  }
-
-  deleteList(id:number){
-    return this.isReady()
-    .then(()=>{
-      return this.database.executeSql(`DELETE FROM list WHERE id = ${id}`, [])
-    })
-  }
-
-
-  getTodosFromList(listId:number){
-    return this.isReady()
-    .then(()=>{
-      return this.database.executeSql(`SELECT * from todo WHERE listId = ${listId}`, [])
-            .then((data)=>{
-              let todos = [];
-              for(let i=0; i<data.rows.length; i++){
-                let todo = data.rows.item(i);
-                //cast binary numbers back to booleans
-                todo.isImportant = !!todo.isImportant;
-                todo.isDone = !!todo.isDone;
-                todos.push(todo);
-              }
-              return todos;
-            })
-    })
-  }
-
-  addTodo(description:string, isImportant:boolean, isDone:boolean, listId:number){
-    return this.isReady()
-    .then(()=>{
-      return this.database.executeSql(`INSERT INTO todo 
-        (description, isImportant, isDone, listId) VALUES (?, ?, ?, ?);`, 
-        //cast booleans to binary numbers        
-        [description, isImportant?1:0, isDone?1:0, listId]);
-    });      
-  }
-
-  modifyTodo(description:string, isImportant:boolean, isDone:boolean, id:number){
-    return this.isReady()
-    .then(()=>{
-      return this.database.executeSql(`UPDATE todo 
-        SET description = ?, 
-            isImportant = ?,
-            isDone = ? 
-        WHERE id = ?`, 
-        //cast booleans to binary numbers
-        [description, isImportant?1:0, isDone?1:0, id]);
-    });       
-  }
-
-  removeTodo(id:number){
-    return this.isReady()
-    .then(()=>{
-      return this.database.executeSql(`DELETE FROM todo WHERE id = ${id}`, [])
-    })    
+    });
   }
 }

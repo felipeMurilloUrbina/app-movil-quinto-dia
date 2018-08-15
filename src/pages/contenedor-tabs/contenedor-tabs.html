@@ -4,3 +4,6 @@
   <ion-tab tabIcon="remove-circle" tabTitle="Insumos" [root]="ajusteAlmacen"></ion-tab>
   <ion-tab tabIcon="log-out" tabTitle="Salir" (ionSelect)="salir()"></ion-tab>
 </ion-tabs>
+<ion-fab bottom right edge>
+  <button ion-fab (click)="sincronizarInfo()"><ion-icon name="refresh"></ion-icon></button> 
+</ion-fab>
