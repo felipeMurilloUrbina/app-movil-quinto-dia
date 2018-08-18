@@ -10,18 +10,22 @@
 <ion-content padding>
   <h3>Control para insumos de inventarios.</h3>
   <p>
-    Bienvenido {{ usuario }}
+    Bienvenido {{ nombreUsuario }}
+    
   </p>
-  <ion-list *ngIf="bodegas" >
+  <p *ngIf="granjas && granjas.length=== 1">
+    Granja:{{granjas[0].Descripcion}}
+  </p>
+  <ion-list *ngIf="granjas && granjas.length > 1">
       <ion-item>
-        <ion-label>Seleccione la bodega:</ion-label>
-        <ion-select interface="popover" [(ngModel)]="bodegaId">
-          <ion-option (click)="seleccionarBodega(bodega)" *ngFor= "let bodega of bodegas" value="{{bodega.codigo}}">{{bodega.descripcion}}</ion-option>
+        <ion-label>Seleccione la granja:</ion-label>
+        <ion-select interface="popover" [(ngModel)]="granjaId">
+          <ion-option (click)="seleccionarBodega(granja)" *ngFor= "let granja of granjas" value="{{bodega.Codigo}}">{{granja.Descripcion}}</ion-option>
         </ion-select>
       </ion-item>
     </ion-list>
-    <button ion-button outline item-end icon-start (click)="seleccionarBodega()">
+    <button *ngIf="granjas && granjas.length > 1" ion-button outline item-end icon-start (click)="seleccionarBodega()">
       <ion-icon name="checkmark"></ion-icon>
-      Seleccionar Bodega
+      Seleccionar Granja
     </button>
 </ion-content>

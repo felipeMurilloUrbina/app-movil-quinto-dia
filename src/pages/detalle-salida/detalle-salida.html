@@ -7,26 +7,34 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>DetalleSalida</ion-title>
+    <ion-title>Detalle de salida</ion-title>
   </ion-navbar>
-
 </ion-header>
 
 <ion-content padding>
   <ion-card>
     <ion-card-header>
-      Articulos Consumidos
+      Articulos consumidos en la salida <{{lista[0]?.folio}}>
     </ion-card-header>
     <ion-card-content>
+      <button ion-button outline item-end icon-start (click)="enviar()">
+        <ion-icon name="checkmark"></ion-icon>
+        Enviar 
+      </button>
+      <button ion-button outline item-end icon-start (click)="mostrarConfirmacion()">
+        <ion-icon name="trash"></ion-icon>
+        Cancelar
+      </button>
+      <ion-searchbar (ionInput)="buscar($event)" [showCancelButton]="true" animated=true placeholder="Buscar"></ion-searchbar>
       <ion-list>
         <ion-item-sliding *ngFor="let salida of lista">
           <ion-item>
             <h2>{{salida.codigoArticulo}}</h2>
-            <p>{{salida.descripcion}  }</p>
-            <p>Cantidad : {{salida.cantidad}}</p>
+            <p>{{salida.descripcion}}</p>
+            <p>Cantidad: {{salida.cantidad}} {{salida.unidad}}</p>
           </ion-item>
-          <ion-item-options side="left">
-            <button ion-button color="danger">
+          <ion-item-options side="right">
+            <button ion-button color="danger" (click)="eliminarSalida(salida)">
               <ion-icon name="trash"></ion-icon>
               Eliminar
             </button>

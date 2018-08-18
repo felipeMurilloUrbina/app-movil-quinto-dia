@@ -45,6 +45,7 @@ export class ContenedorTabsPage {
         this.servicioCentroCosto.sincronizarInfo().add((dato)=>{
           loader.dismiss();
         });
+        // loader.dismiss();
       });
     });
   }

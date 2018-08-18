@@ -19,13 +19,13 @@ import { Usuario } from '../../modelos/usuario.model';
 })
 export class LoginPage {
 
-  usuario : Usuario;
+  usuario: Usuario;
   constructor(public navCtrl: NavController, public navParams: NavParams, private _service: AutentificacionService, public loadingController: LoadingController, public toaster: ToastController) {
     this.usuario = new Usuario();
   }
 
   ionViewDidLoad() {
-    this.usuario.username = 'admin';
+    this.usuario.username = 'adminS';
     this.usuario.password= 'Admin*';
     // if(localStorage.getItem('token')) {
     //   this.navCtrl.setRoot(ContenedorTabsPage);
@@ -40,7 +40,7 @@ export class LoginPage {
         loader.dismiss();
       }, error => {
         loader.dismiss();
-        this.enviarMensaje(error.error.error_description);
+        this.enviarMensaje(error.error.error_description ? 'Ocurrio un error al conectarse al servidor' : error.error.error_description );
         this.usuario = new Usuario();
       });
     });

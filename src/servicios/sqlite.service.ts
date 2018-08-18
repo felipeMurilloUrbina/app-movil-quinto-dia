@@ -32,6 +32,10 @@ export class SQLiteService {
 
   private createTables(){
     let consultas= [];
+    consultas.push('DROP TABLE articulos;');
+    consultas.push('DROP TABLE centroCostos;');
+    consultas.push('DROP TABLE salidaAlmacen;');
+    // consultas.push('DROP TABLE salidaAlmacen;');
     consultas.push(`CREATE TABLE IF NOT EXISTS articulos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       codigo TEXT,
@@ -52,24 +56,28 @@ export class SQLiteService {
       descripcion TEXT,
       codigo TEXT
       );`);
-      // consultas.push('DROP TABLE salidaAlmacen;');
+    // consultas.push('DROP TABLE salidaAlmacen;');
     consultas.push(`CREATE TABLE IF NOT EXISTS salidaAlmacen (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       folio INTEGER,
+      numeroFila INTEGER,
       codigoArticulo TEXT,
       descripcion TEXT,
+      unidad TEXT,
+      costoPromedio REAL,
       codigoBodega TEXT,
       codigoCentroCosto1 TEXT,
       codigoCentroCosto2 TEXT,
       usuario TEXT,
       posicion TEXT,
-      fecha TEXTO,
+      fecha TEXT,
+      hora TEXT,
       cantidad REAL,
+      revisado INTEGER,
       enviado INTEGER
       );`);
-      return this.database.sqlBatch(consultas).then(()=> {
-        console.log('aaaaaa');
-      }).catch((error)=>{
+
+      return this.database.sqlBatch(consultas).catch((error)=>{
         console.log(error);
       });
   }
@@ -123,7 +131,7 @@ export class SQLiteService {
     return this.isReady()
     .then(()=>{
       return this.database.executeSql(`DELETE FROM articulos`, [])
-    })
+    });
   }
   
   getCentroCosto(consulta: string, cantidad: number){
@@ -161,10 +169,10 @@ export class SQLiteService {
     })
   }
 
-  getSalidas(consulta: string, cantidad: number) {
+  getSalidas(consulta: string, cantidad: number, folio: number) {
     return this.isReady()
     .then(()=>{
-      return this.database.executeSql('SELECT * FROM salidaAlmacen WHERE descripcion LIKE \'%' + consulta + '%\' LIMIT ' + cantidad, [])
+      return this.database.executeSql('SELECT * FROM salidaAlmacen WHERE descripcion LIKE \'%' + consulta + '%\' AND folio= ' + folio + ' LIMIT ' + cantidad, [])
       .then((data)=>{
         let salidas = [];
         for(let i=0; i<data.rows.length; i++){
@@ -177,20 +185,106 @@ export class SQLiteService {
 
   getFolioSalida(codigoBodega: string) {
     return this.isReady().then(()=> {
-      return this.database.executeSql('SELECT MAX(folio) as folio FROM salidaAlmacen WHERE codigoBodega= \''+codigoBodega+'\'', [])
+      return this.database.executeSql('SELECT MAX(folio) as folio FROM salidaAlmacen WHERE revisado = 1;', [])
+      .then((data)=>{
+        return Promise.resolve( data.rows.item(0) );
+      }).catch((error)=>{console.log("aaaa", error)});
+    });
+  }
+  getNumeroFila(folio: number) {
+    return this.isReady().then(()=> {
+      return this.database.executeSql('SELECT MAX(numeroFila) as numeroFila FROM salidaAlmacen WHERE folio ='+ folio, [])
       .then((data)=>{
         return Promise.resolve( data.rows.item(0) );
       }).catch((error)=>{console.log("aaaa", error)});
     });
   }
 
+  ejecutarSQL(consulta) {
+    return this.isReady().then(()=> {
+      return this.database.executeSql(consulta, [])
+      .then((data) => {
+        let salidas = [];
+        for(let i=0; i < data.rows.length; i++){
+          salidas.push(data.rows.item(i));
+        }
+        return Promise.resolve( salidas );
+      }).catch((error)=>{console.log("aaaa", error)});
+    });
+  }
+
   agregarSalida(salida: SalidaAlmacen) {
     return this.isReady()
-    .then(()=>{
+    .then(() => {
+      this.getNumeroFila(salida.folio).then((dato) => {
+        salida.numeroFila = dato.numeroFila ===null ? 1 : dato.numeroFila;
         this.database.executeSql(`INSERT INTO salidaAlmacen 
-          (folio, codigoArticulo, descripcion, codigoBodega, codigoCentroCosto1, codigoCentroCosto2, 
-           usuario, posicion, fecha, cantidad, enviado ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, 
-          [salida.folio, salida.codigoArticulo, salida.codigoArticulo.trim(), salida.descripcion.trim(), salida.codigoBodega, salida.codigoCentroCosto1, salida.codigoCentroCosto2, salida.usuario, salida.posicion, salida.fecha, salida.cantidad, salida.enviado?1:0])
+          (folio, numeroFila, codigoArticulo, descripcion, unidad, costoPromedio, codigoBodega, codigoCentroCosto1, codigoCentroCosto2, 
+           usuario, posicion, fecha, hora, cantidad, enviado, revisado ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`, 
+          [salida.folio,
+           salida.numeroFila,
+           salida.codigoArticulo.trim(),
+           salida.descripcion.trim(),
+           salida.unidad.trim(),
+           salida.costoPromedio,
+           salida.codigoBodega.trim(),
+           salida.codigoCentroCosto1.trim(),
+           salida.codigoCentroCosto2.trim(),
+           salida.usuario.trim(),
+           salida.posicion,
+           salida.fecha,
+           salida.hora,
+           salida.cantidad,
+           salida.enviado ? 1 : 0, 
+           0]
+          )
+          .catch((err)=>console.log("Error al Insertar Salida", err));
+      });
+    }); 
+  }
+
+  cambiarStatus(folio: number, estatus: boolean) {
+    return this.isReady()
+    .then(() => {
+        this.database.executeSql(`UPDATE salidaAlmacen  SET revisado = ? WHERE folio = ?`, 
+          [
+            estatus ? 1 : 0, 
+            folio
+          ]
+          ).then((dato) => {
+            return Promise.resolve(dato);
+          })
+          .catch((err)=>console.log("Error al Insertar Salida", err));
+    }); 
+  }
+
+  eliminarSalidas(folio: number) { 
+    return this.isReady()
+    .then(() => {
+        this.database.executeSql(`DELETE FROM salidaAlmacen WHERE folio = ?`, 
+          [
+            folio
+          ]
+          ).then((dato) => {
+            // console.log('Cambiar Status', dato, estatus, folio);
+            return Promise.resolve(dato);
+          })
+          .catch((err)=>console.log("Error al Insertar Salida", err));
+    }); 
+  }
+
+  eliminarSalida(salida: SalidaAlmacen) { 
+    return this.isReady()
+    .then(() => {
+        this.database.executeSql(`DELETE FROM salidaAlmacen WHERE folio = ? AND numeroFila = ?`, 
+          [
+            salida.folio, 
+            salida.numeroFila
+          ]
+          ).then((dato) => {
+            // console.log('Cambiar Status', dato, estatus, folio);
+            return Promise.resolve(dato);
+          })
           .catch((err)=>console.log("Error al Insertar Salida", err));
     }); 
   }

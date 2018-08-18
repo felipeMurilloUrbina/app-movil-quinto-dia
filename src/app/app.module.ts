@@ -1,3 +1,5 @@
+import { BackgroundMode } from '@ionic-native/background-mode';
+import { Diagnostic } from '@ionic-native/diagnostic';
 import { LoginPageModule } from './../pages/login/login.module';
 import { BodegaService } from './../servicios/bodega.service';
 import { ConsultaArticuloPageModule } from './../pages/consulta-articulo/consulta-articulo.module';
@@ -5,7 +7,7 @@ import { AjusteAlmacenPageModule } from './../pages/ajuste-almacen/ajuste-almace
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
-
+import { IonicStorageModule } from '@ionic/storage';
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { Geolocation } from '@ionic-native/geolocation';
@@ -21,6 +23,7 @@ import { SQLiteService } from '../servicios/sqlite.service';
 import { ChartsModule } from 'ng2-charts';
 import { SignupPageModule } from '../pages/signup/signup.module';
 import { DetalleSalidaPageModule } from '../pages/detalle-salida/detalle-salida.module';
+import { JwtHelperService } from '@auth0/angular-jwt';
 @NgModule({
   declarations: [
     MyApp,
@@ -39,6 +42,7 @@ import { DetalleSalidaPageModule } from '../pages/detalle-salida/detalle-salida.
     ConsultaArticuloPageModule,
     ConsultaCentroCostoPageModule,
     IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -46,13 +50,17 @@ import { DetalleSalidaPageModule } from '../pages/detalle-salida/detalle-salida.
     HomePage,
   ],
   providers: [
+    BackgroundMode,
+    Diagnostic,
     StatusBar,
     SplashScreen,
     BodegaService,
     Geolocation,
+    JwtHelperService,
     AutentificacionService,
     SQLite,
     SQLiteService,
+    Storage,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

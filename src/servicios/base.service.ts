@@ -1,23 +1,29 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-  
+import { Storage } from '@ionic/storage';
+
   @Injectable()
   export class BaseService {
   
     private actionUrl: string;
     private urlBase = 'http://quintodia.api.dev.facturasiweb.com/api/';
-    // private urlBase = 'http://localhost:50249/api/';
+    // private urlBase = 'http://192.168.1.168:50249/api/';
     httpOptions: any;
-    constructor(public http: HttpClient, public endPoint: string) {
+    constructor(public http: HttpClient, public endPoint: string, public storage: Storage) {
       this.actionUrl = this.urlBase + endPoint;
-      this.httpOptions = {
-        headers: new HttpHeaders({
-          'Content-Type':  'application/json',
-          'Cache-Control': 'no-cache',
-          'Authorization': 'Bearer ' + localStorage.getItem('token'),
-          'bodega': '100' // localStorage.getItem('bodega')
-        })
-      };
+      storage.get('token').then((token)=> {
+        storage.get('granja').then((granja)=> {
+          this.httpOptions = {
+            headers: new HttpHeaders({
+              'Content-Type':  'application/json',
+              'Cache-Control': 'no-cache',
+              'Authorization': 'Bearer ' + token,
+              'granja': granja,
+              'bodega': '100' // localStorage.getItem('bodega')
+            })
+          };
+        });
+      }); 
     }
     
     public getUrl(): string {
