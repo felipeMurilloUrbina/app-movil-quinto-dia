@@ -1,9 +1,8 @@
 import { ContenedorTabsPage } from './../contenedor-tabs/contenedor-tabs';
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, LoadingController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, LoadingController, ToastController, Platform } from 'ionic-angular';
 import { AutentificacionService } from '../../servicios/autentificacion.service';
 import { Usuario } from '../../modelos/usuario.model';
-
 /**
  * Generated class for the LoginPage page.
  *
@@ -20,7 +19,13 @@ import { Usuario } from '../../modelos/usuario.model';
 export class LoginPage {
 
   usuario: Usuario;
-  constructor(public navCtrl: NavController, public navParams: NavParams, private _service: AutentificacionService, public loadingController: LoadingController, public toaster: ToastController) {
+  constructor(
+    public platform: Platform,
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private _service: AutentificacionService,
+    public loadingController: LoadingController, 
+    public toaster: ToastController) {
     this.usuario = new Usuario();
   }
 
@@ -52,5 +57,9 @@ export class LoginPage {
       duration: 3000
     });
     toast.present();
+  }
+  
+  salir() {
+    this.platform.exitApp();
   }
 }

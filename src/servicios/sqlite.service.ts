@@ -32,9 +32,9 @@ export class SQLiteService {
 
   private createTables(){
     let consultas= [];
-    consultas.push('DROP TABLE articulos;');
-    consultas.push('DROP TABLE centroCostos;');
-    consultas.push('DROP TABLE salidaAlmacen;');
+    // consultas.push('DROP TABLE articulos;');
+    // consultas.push('DROP TABLE centroCostos;');
+    // consultas.push('DROP TABLE salidaAlmacen;');
     // consultas.push('DROP TABLE salidaAlmacen;');
     consultas.push(`CREATE TABLE IF NOT EXISTS articulos (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
