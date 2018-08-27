@@ -32,9 +32,6 @@ export class LoginPage {
   ionViewDidLoad() {
     this.usuario.username = 'adminS';
     this.usuario.password= 'Admin*';
-    // if(localStorage.getItem('token')) {
-    //   this.navCtrl.setRoot(ContenedorTabsPage);
-    // }
   }
 
   entrar() {

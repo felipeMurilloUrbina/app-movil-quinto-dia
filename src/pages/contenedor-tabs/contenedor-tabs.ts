@@ -7,6 +7,7 @@ import { AjusteAlmacenPage } from './../ajuste-almacen/ajuste-almacen';
 import { HomePage } from './../home/home';
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, LoadingController } from 'ionic-angular';
+import { AutorizacionPage } from '../autorizacion/autorizacion';
 
 /**
  * Generated class for the ContenedorTabsPage page.
@@ -24,6 +25,7 @@ export class ContenedorTabsPage {
   inicio = HomePage;
   ajusteAlmacen = AjusteAlmacenPage;
   estanque = EstanquePage;
+  autorizacion = AutorizacionPage;
   constructor(public navCtrl: NavController, public navParams: NavParams, private servicio: AutentificacionService, public servicioArticulo: ArticuloService,  public servicioCentroCosto: CentroCostoService, private loaderCtrl: LoadingController) {
   }
 
