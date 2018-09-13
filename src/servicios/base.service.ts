@@ -12,7 +12,7 @@ import { Storage } from '@ionic/storage';
     constructor(public http: HttpClient, public endPoint: string, public storage: Storage) {
       this.actionUrl = this.urlBase + endPoint;
       storage.get('token').then((token)=> {
-        storage.get('granja').then((granja)=> {
+        storage.get('granja').then((granja) => {
           this.httpOptions = {
             headers: new HttpHeaders({
               'Content-Type':  'application/json',
